@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Dto\Auth;
 
 use App\Http\Requests\Auth\UpdateProfileRequest;
@@ -11,7 +13,8 @@ class UpdateProfileDto
         public readonly ?string $lastName,
         public readonly ?string $email,
         public readonly ?string $phone,
-    ) {}
+    ) {
+    }
 
     /**
      * Создать DTO из валидированного запроса
@@ -39,4 +42,3 @@ class UpdateProfileDto
         ];
     }
 }
-

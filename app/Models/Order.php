@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -13,9 +15,9 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function items ()
-        {
-         return $this->hasMany(OrderItem::class);
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class);
     }
 
 }

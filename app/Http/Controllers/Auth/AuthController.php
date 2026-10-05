@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Auth;
 
 use App\Dto\Auth\RegisterDto;
@@ -7,6 +9,7 @@ use App\Dto\Auth\UpdateProfileDto;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\UpdatePasswordRequest;
 use App\Http\Requests\Auth\UpdateProfileRequest;
 use App\Services\Auth\UserService;
 use Illuminate\Contracts\View\Factory;
@@ -14,13 +17,13 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
-use App\Http\Requests\Auth\UpdatePasswordRequest;
 
 class AuthController extends Controller
 {
     public function __construct(
         private readonly UserService $userService
-    ) {}
+    ) {
+    }
 
     /** Показ формы регистрации */
     public function showRegistrationForm(): Factory|View
@@ -105,4 +108,3 @@ class AuthController extends Controller
             ->with('status', 'Password successfully changed!');
     }
 }
-
