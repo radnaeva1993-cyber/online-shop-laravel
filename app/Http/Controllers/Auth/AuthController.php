@@ -3,12 +3,18 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Dto\Auth\RegisterDto;
+use App\Dto\Auth\UpdateProfileDto;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\UpdateProfileRequest;
 use App\Services\Auth\UserService;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+use App\Http\Requests\Auth\UpdatePasswordRequest;
 
 class AuthController extends Controller
 {
@@ -30,8 +36,73 @@ class AuthController extends Controller
             ->userService
             ->register($dto);
 
-        return redirect('/')
+        return redirect()
+            ->route('login.form')
             ->with('status', 'Регистрация прошла успешно');
+    }
+
+    public function showLoginForm(): Factory|View
+    {
+        return view('auth.login');
+    }
+
+    public function login(LoginRequest $request): RedirectResponse
+    {
+        $credentials = $request->validated();
+
+        if (Auth::attempt($credentials)) {
+            return redirect()->intended('profile');
+        }
+
+        return back()->withErrors(['email' => 'Invalid credentials']);
+    }
+
+    public function logout(): RedirectResponse
+    {
+        Auth::logout();
+
+        return redirect()->route('login.form');
+    }
+
+    public function showProfile(): Factory|View
+    {
+        $user = Auth::user();
+
+        return view('auth.profile', compact('user'));
+    }
+
+    public function updateProfile(UpdateProfileRequest $request): RedirectResponse
+    {
+        $dto = UpdateProfileDto::fromRequest($request);
+        $this->userService->updateProfile($dto);
+
+        return redirect()->route('profile.form');
+    }
+
+    public function showChangePasswordForm(): Factory|View
+    {
+        return view('auth.change-password');
+    }
+
+    /**
+     * @throws ValidationException
+     */
+    public function updatePassword(UpdatePasswordRequest $request): RedirectResponse
+    {
+        $validatedData = $request->validated();
+        $user = Auth::user();
+
+        $this
+            ->userService
+            ->updatePassword(
+                $user,
+                $validatedData['current_password'],
+                $validatedData['new_password']
+            );
+
+        return redirect()
+            ->route('profile.form')
+            ->with('status', 'Password successfully changed!');
     }
 }
 
